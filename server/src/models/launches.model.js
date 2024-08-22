@@ -96,9 +96,10 @@ async function abortLaunchById(launchId) {
     upcoming: false,
     success: false
   });
-console.log('aborted :',aborted)
+  // console.log('aborted :',aborted)
 
-  return aborted;
+  // return aborted.ok === 1 && aborted.nModified === 1;
+  return aborted.modifiedCount === 1;
   // launches.delete(launchId);
   /* const aborted = launches.get(launchId);
   aborted.upcoming = false;
