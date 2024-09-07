@@ -31,21 +31,21 @@ async function populateLaunches() {
     query: {},
     options: {
       pagination: false,
-        populate: [
-            {
-                path: 'rocket',
-                select: {
-                    name: 1
-                }
-            },
-            {
-              path: 'payloads',
-              select: {
-                customers: 1
-              }
-            }
-        ]
-    }
+      populate: [
+        {
+          path: 'rocket',
+          select: {
+            name: 1,
+          },
+        },
+        {
+          path: 'payloads',
+          select: {
+            customers: 1,
+          },
+        },
+      ],
+    },
   });
 
   if (response.status !== 200) {
@@ -102,9 +102,7 @@ async function existsLaunchWithId(launchId) {
 }
 
 async function getLatestFlightNumber() {
-  const latestLaunch = await launchesDatabase
-    .findOne()
-    .sort('-flightNumber');
+  const latestLaunch = await launchesDatabase.findOne().sort('-flightNumber');
 
   if (!latestLaunch) {
     return DEFAULT_FLIGHT_NUMBER;
@@ -116,7 +114,7 @@ async function getLatestFlightNumber() {
 async function getAllLaunches(skip, limit) {
   // return Array.from(launches.values());
   return await launchesDatabase
-    .find({}, { '_id': 0, '__v': 0 })
+    .find({}, { _id: 0, __v: 0 })
     .sort({ flightNumber: 1 })
     .skip(skip)
     .limit(limit);
@@ -124,29 +122,33 @@ async function getAllLaunches(skip, limit) {
 
 async function saveLaunch(launch) {
   // await launchesDatabase.updateOne({
-  await launchesDatabase.findOneAndUpdate({
-    flightNumber: launch.flightNumber
-  }, launch, {
-    upsert: true
-  });
+  await launchesDatabase.findOneAndUpdate(
+    {
+      flightNumber: launch.flightNumber,
+    },
+    launch,
+    {
+      upsert: true,
+    }
+  );
 }
 
 async function scheduleNewLaunch(launch) {
   const planet = await planets.findOne({
-    keplerName: launch.target
+    keplerName: launch.target,
   });
 
   if (!planet) {
     throw new Error('No matching planet found!');
   }
 
-  const newFlightNumber = await getLatestFlightNumber() + 1;
+  const newFlightNumber = (await getLatestFlightNumber()) + 1;
 
   const newLaunch = Object.assign(launch, {
     success: true,
     upcoming: true,
     customers: ['Zero to Mastery', 'NASA'],
-    flightNumber: newFlightNumber
+    flightNumber: newFlightNumber,
   });
 
   await saveLaunch(newLaunch);
@@ -166,12 +168,15 @@ async function scheduleNewLaunch(launch) {
 // }
 
 async function abortLaunchById(launchId) {
-  const aborted = await launchesDatabase.updateOne({
-    flightNumber: launchId,
-  }, {
-    upcoming: false,
-    success: false
-  });
+  const aborted = await launchesDatabase.updateOne(
+    {
+      flightNumber: launchId,
+    },
+    {
+      upcoming: false,
+      success: false,
+    }
+  );
   // console.log('aborted :',aborted)
 
   // return aborted.ok === 1 && aborted.nModified === 1;
@@ -184,11 +189,11 @@ async function abortLaunchById(launchId) {
 }
 
 module.exports = {
-  loadLaunchData, 
+  loadLaunchData,
   // launches
   existsLaunchWithId,
   getAllLaunches,
   // addNewLaunch,
   scheduleNewLaunch,
-  abortLaunchById
+  abortLaunchById,
 };

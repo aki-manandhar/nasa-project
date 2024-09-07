@@ -42,7 +42,7 @@ async function httpAddNewLaunch(req, res) {
 
   // addNewLaunch(launch);
   await scheduleNewLaunch(launch);
-  console.log(launch);
+  /* console.log(launch); */
   return res.status(201).json(launch);
 }
 
@@ -63,7 +63,7 @@ async function httpAbortLaunch(req, res) {
   const aborted = await abortLaunchById(launchId);
   if (!aborted) {
     return res.status(400).json({
-      error: 'Launch not aborted'
+      error: 'Launch not aborted',
     });
   }
 
